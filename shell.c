@@ -10,7 +10,7 @@ void shell() {
 		case "cd":
 			break;
 		case "exit:
-			return 0;
+			return;
 		default:
 			int c = fork();
 			if(!c) execvp(tokens[0], tokens);
