@@ -2,11 +2,15 @@
 #include <stdlib.h>
 
 #include "parser.h"
+#include "shell.h"
 
 void shell() {
-	while(1) {
+	while (true) {
 		char **tokens = parse();
-		switch tokens[0]:
+
+        for (int i = 0; i < struct.size; i++)
+        {
+        switch tokens[i]:
 		case "cd":
 			break;
 		case "exit:
@@ -15,5 +19,22 @@ void shell() {
 			int c = fork();
 			if(!c) execvp(tokens[0], tokens);
 			break;
-	}
+	    }
+    }
+}
+
+void run()
+{
+
+}
+
+void command(char *cmd)
+{
+    format(cmd);
+    int c = fork();
+    
+    if (!c)
+    {
+        execvp(cmd[0], cmd);
+    }
 }
