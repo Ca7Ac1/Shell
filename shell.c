@@ -4,19 +4,25 @@
 
 #include "parser.h"
 #include "shell.h"
+#include "command.h"
 
 void shell() {
 	while (true) {
-		char **tokens = parse();
+		command* command = parse();
+		char** tokens = command.cmd;
 
-	        for (int i = 0; i < struct.size; i++)
+
+	        for (int i = 0; i < command.size; i++)
 	       	{
 			//create separate function
 			//int start = 0
-			for(int j = 0; j < struct[i].size; j++) {
-				//can u have multiple redirections
-				if(strcmp(struct[i][j], ">") == 0) {
-					rrun(tokens, j);	
+			
+			//TODO: find tokens[i].size ie length of cmd + flags
+			for(int j = 0; j < tokens[i].size; j++) {
+				if(strcmp(tokens[i][j], ">") == 0) {
+					rrun1(tokens, j);	
+				} else if(strcmp(tokens[i][j], "<") == 0) {
+					rrun2(tokens, j);
 				}
 			}
 
@@ -32,7 +38,7 @@ void shell() {
 	}
 }
 
-void run(token tokens)
+void run(char **tokens)
 {
 	int c = fork();
 	if(!c) {
@@ -40,12 +46,22 @@ void run(token tokens)
 	}
 }
 
-void rrun(token tokens, int r) {
-	char** first;
-	for(int i = 0; i < j; i++) {
-		first[i] = tokens[i];	
-	}
-	//TODO: finish plz
+void rrun1(char **tokens, int r) {
+	//split array
+	char **first;
+	int a = dup();
+	dup2(STDOUT_FILENO, a);
+	run(first);
+	dup2(a, STDOUT_FILENO);	
+}
+
+void rrun2(char **tokens, int r) {
+	//split array
+	char **second;
+	int a = dup();
+	dup2(STDIN_FILENO, a);
+	run(second);
+	dup2(a, STDIN_FILENO);	
 }
 
 void command(char *cmd)
