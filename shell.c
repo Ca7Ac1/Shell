@@ -11,8 +11,13 @@
 
 void shell() 
 {
+	char path[1000000];
+
 	while (1)
 	{
+		getcwd(path, sizeof(path) * sizeof(char));
+		printf("%s ", path);
+
 		command* cmd = parse();
 		command* orig = cmd;
 
@@ -22,6 +27,7 @@ void shell()
 
 			if (strcmp(tokens[0], "cd") == 0)
 			{
+				// printf("\n\nChanging to: %s\n\n", tokens[1]);
 				chdir(tokens[1]);
 			}
 			else if (strcmp(tokens[0], "exit") == 0)
