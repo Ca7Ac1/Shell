@@ -6,6 +6,12 @@
 
 command *addCommand(command *cmd, char *tokens)
 {
+    if (!cmd)
+    {
+        cmd = malloc(sizeof(command));
+        cmd->next = 0;
+    }
+
     command *orig = cmd;
 
     while (cmd->next)
@@ -13,10 +19,10 @@ command *addCommand(command *cmd, char *tokens)
         cmd = cmd->next;
     }
 
-    cmd->next = malloc(sizeof(cmd));
+    cmd->next = malloc(sizeof(command));
     cmd = cmd->next;
 
-    int len = 0;
+    int len = 1;
     for (int i = 0; i < strlen(tokens); i++)
     {
         if (tokens[i] == ' ')
@@ -39,8 +45,29 @@ command *addCommand(command *cmd, char *tokens)
     
     cmd->size = len;
     cmd->tokens = sepTokens;
+    cmd->next = 0;
     
     return orig;
+}
+
+void printCommands(command *cmd)
+{
+    printf("Command [\n");
+
+    while (cmd)
+    {
+        printf("size: %d ", cmd->size);
+
+        for (int i = 0; i < cmd->size; i++)
+        {
+            printf("%s ", cmd->tokens[i]);
+        }
+
+        printf("\n");
+        cmd = cmd->next;
+    }
+
+    printf("]\n");
 }
 
 void freeCommands(command *cmd)
