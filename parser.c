@@ -8,8 +8,8 @@
 
 command *parse()
 {
-    char line[(int) 3e5 + 1];
-    fgets(line, (int) 3e5, stdin);
+    char line[300001];
+    fgets(line, 300000 * sizeof(char), stdin);
     
     char *formattedLine = format(line);
 
