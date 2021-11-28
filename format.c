@@ -10,18 +10,18 @@ char *insertSpace(char *line)
 
     for (int i = 0; i < strlen(line); i++)
     {
-        if (line[i] == '|' || line[i] == '>' || line[i] == '<')
+        if (line[i] == '|' || line[i] == '>' || line[i] == '<' || line[i] == ';')
         {
             additions++;
         }
     }
 
-    char *newLine = malloc(sizeof(*line) * strlen(line) + sizeof(char) * additions);
+    char *newLine = malloc(sizeof(char) * strlen(line) + sizeof(char) * additions);
 
     int index = 0;
     for (int i = 0; i < strlen(line); i++)
     {
-        if (line[i] == ';' || line[i] == '|' || line[i] == '>' || line[i] == '<') 
+        if (line[i] == '|' || line[i] == '>' || line[i] == '<' || line[i] == ';') 
         {
             newLine[index] = ' ';
             newLine[index + 1] = line[i];
@@ -37,12 +37,36 @@ char *insertSpace(char *line)
         index++;
      }
 
+    newLine[index] = '\0';
+
+    return newLine;
+}
+
+char *alterSpace(char *line)
+{
+    char *newLine = malloc(sizeof(char) * strlen(line));
+  
+    int index = 0;
+    for (int i = 0; i < strlen(line); i++)
+    {
+        if (line[i] == '\t' || line[i] == '\n')
+        {
+            newLine[i] = ' ';
+        }
+        else
+        {
+            newLine[i] = line[i];
+        }
+    }
+
+    newLine[strlen(line)] = '\0';
+  
     return newLine;
 }
 
 char *removeSpace(char *line)
 {
-    char *newLine = malloc(sizeof(*line) * strlen(line));
+    char *newLine = malloc(sizeof(char) * strlen(line));
   
     int index = 0;
     for (int i = 0; i < strlen(line); i++)
@@ -62,5 +86,17 @@ char *removeSpace(char *line)
     newLine[index] = '\0';
   
     return newLine;
+}
+
+char *format(char* line)
+{
+    char *insert = insertSpace(line);
+    char *alter = alterSpace(insert);
+    char *remove = removeSpace(alter);
+
+    free(insert);
+    free(alter);
+    
+    return remove;
 }
 
