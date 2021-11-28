@@ -84,7 +84,7 @@ char *removeSpace(char *line)
     int index = 0;
     for (int i = 0; i < strlen(line); i++)
     {
-        if (index != 0 && newLine[index - 1] == ' ' && (line[i] == ';' || i == 0))
+        if (index != 0 && newLine[index - 1] == ' ' && (line[i] == ';' || index == 1))
         {
             newLine[index - 1] = line[i];
         }
