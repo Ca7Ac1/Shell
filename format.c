@@ -11,6 +11,8 @@ char *lower(char *line)
     {
         line[i] = tolower(line[i]);
     }
+
+    return line;
 }
 
 char *insertSpace(char *line)
@@ -19,13 +21,15 @@ char *insertSpace(char *line)
 
     for (int i = 0; i < strlen(line); i++)
     {
-        if (line[i] == '|' || line[i] == '>' || line[i] == '<' || line[i] == ';')
+        if (line[i] == '|' || line[i] == '>' || line[i] == '<')
         {
             additions++;
         }
     }
 
-    char *newLine = malloc(sizeof(char) * strlen(line) + sizeof(char) * additions);
+    additions *= 2;
+
+    char *newLine = malloc(sizeof(char) * strlen(line) + sizeof(char) * additions + 1);
 
     int index = 0;
     for (int i = 0; i < strlen(line); i++)
@@ -75,19 +79,23 @@ char *alterSpace(char *line)
 
 char *removeSpace(char *line)
 {
-    char *newLine = malloc(sizeof(char) * strlen(line));
+    char *newLine = malloc(sizeof(char) * strlen(line) + 1);
   
     int index = 0;
     for (int i = 0; i < strlen(line); i++)
     {
-        if (!((line[i] == ' ' || line[i] == ';') && (i == 0 || line[i - 1] == ' ' || line[i - 1] == ';')))
+        if (index != 0 && newLine[index - 1] == ' ' && (line[i] == ';' || i == 0))
+        {
+            newLine[index - 1] = line[i];
+        }
+        else if (index != 0 && line[i] != ' ' || (newLine[index - 1] != ' ' && newLine[index - 1] != ';'))
         {
             newLine[index] = line[i];
             index++;
         }
     }
   
-    if (index > 0 && newLine[index - 1] == '\n')
+    while (index > 0 && newLine[index - 1] == '\n' || newLine[index - 1] == ' ')
     {
         index--;
     }
