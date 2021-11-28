@@ -1,40 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "parser.h"
 #include "shell.h"
 #include "command.h"
 
 void shell() {
-	while (true) {
-		command* command = parse();
-		char** tokens = command.cmd;
+	while (true)
+	{
+		command* cmd = parse();
+		
+		while (cmd)
+		{
+			char **tokens = cmd->tokens;
 
-
-	        for (int i = 0; i < command.size; i++)
-	       	{
-			//create separate function
-			//int start = 0
-			
-			//TODO: find tokens[i].size ie length of cmd + flags
-			for(int j = 0; j < tokens[i].size; j++) {
-				if(strcmp(tokens[i][j], ">") == 0) {
-					rrun1(tokens, j);	
-				} else if(strcmp(tokens[i][j], "<") == 0) {
-					rrun2(tokens, j);
-				}
+			if (strcmp(tokens[0], "cd") == 0)
+			{
+				chdir(tokens[1]);
+			}
+			else if (strcmp(tokens[0], "exit" == 0))
+			{
+				exit(0);
+			}
+			else
+			{
+				execute(tokens);
 			}
 
-
-		       	if (strcmp(tokens[i], "cd") == 0) {
-	
-			} else if (strcmp(tokens[i], "exit") == 0) {
-				return;
-			} else {
-				run(tokens);
+			if (errno)
+			{
+				cout << strerror(errno);
 			}
-    		}
+
+			cmd = cmd->next;
+		}
+
+		freeCommands(cmd);
 	}
 }
 
