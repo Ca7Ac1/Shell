@@ -1,8 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "format.h"
+
+char *lower(char *line)
+{
+    for (int i = 0; i < strlen(line); i++)
+    {
+        line[i] = tolower(line[i]);
+    }
+}
 
 char *insertSpace(char *line)
 {
@@ -90,6 +99,7 @@ char *removeSpace(char *line)
 
 char *format(char* line)
 {
+    line = lower(line);
     char *insert = insertSpace(line);
     char *alter = alterSpace(insert);
     char *remove = removeSpace(alter);
