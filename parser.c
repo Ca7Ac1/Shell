@@ -4,37 +4,28 @@
 
 #include "parser.h"
 #include "format.h"
-#include "tokens.h"
+#include "command.h"
 
-token *parse()
+command *parse()
 {
     char line[(int) 3e5 + 1];
     fgets(line, (int) 3e5, stdin);
     
-    char *newLine = insertSpace(line);
-    newLine = removeSpace(newLine); 
-    
-    int len = 0;
-    for (int i = 0; i < strlen(newLine); i++)
-    {
-        if (newLine[i] == ';' || newLine[i] == '\n')
-        {
-            len++;
-        }
-    }
+    char *formattedLine = format(line);
 
-    token *commands = malloc(sizeof(token) * len);
+    command *commands = splitCommands(formattedLine);
     
-    int index = 0;
-    while (*newLine)
-    {
-        commands[index] = createToken();
-    }
+    return commands;
 }
 
-token *createToken(char *)
+command *splitCommands(char *line)
 {
-
+    command *commands;
+    while (line)
+    {   
+        char *tokens = strsep(line, ';');
+        commands = addCommand(commands, tokens);
+    }
 }
 
 int main()
