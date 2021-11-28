@@ -14,7 +14,8 @@ void shell()
 	while (1)
 	{
 		command* cmd = parse();
-		
+		command* orig = cmd;
+
 		while (cmd)
 		{
 			char **tokens = cmd->tokens;
@@ -35,12 +36,13 @@ void shell()
 			if (errno)
 			{
 				printf("%s", strerror(errno));
+				cmd = NULL;
 			}
 
 			cmd = cmd->next;
 		}
 
-		freeCommands(cmd);
+		freeCommands(orig);
 	}
 }
 
