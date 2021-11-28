@@ -107,7 +107,7 @@ char *removeSpace(char *line)
 
 char *format(char* line)
 {
-    line = lower(line);
+    // line = lower(line);
     char *insert = insertSpace(line);
     char *alter = alterSpace(insert);
     char *remove = removeSpace(alter);
