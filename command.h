@@ -9,6 +9,6 @@ typedef struct command
 } command;
 
 command *addCommand(command *, char **);
-void free(command *);
+void freeCommands(command *);
 
 #endif

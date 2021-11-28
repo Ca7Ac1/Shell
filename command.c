@@ -5,7 +5,7 @@
 
 command *addCommand(command *cmd, char *tokens)
 {
-    cmd *orig = cmd;
+    command *orig = cmd;
 
     while (cmd->next)
     {
@@ -42,7 +42,7 @@ command *addCommand(command *cmd, char *tokens)
     return orig;
 }
 
-void free(command *cmd)
+void freeCommands(command *cmd)
 {
     command *prev;
 
