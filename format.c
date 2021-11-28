@@ -21,7 +21,7 @@ char *insertSpace(char *line)
     int index = 0;
     for (int i = 0; i < strlen(line); i++)
     {
-        if (line[i] == '|' || line[i] == '>' || line[i] == '<' || line[i] == ';') 
+        if (line[i] == '|' || line[i] == '>' || line[i] == '<') 
         {
             newLine[index] = ' ';
             newLine[index + 1] = line[i];
@@ -71,7 +71,7 @@ char *removeSpace(char *line)
     int index = 0;
     for (int i = 0; i < strlen(line); i++)
     {
-        if (!(line[i] == ' ' && (i == 0 || line[i - 1] == ' ')))
+        if (!((line[i] == ' ' || line[i] == ';') && (i == 0 || line[i - 1] == ' ' || line[i - 1] == ';')))
         {
             newLine[index] = line[i];
             index++;
