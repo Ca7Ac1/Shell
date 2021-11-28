@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "command.h"
 
@@ -16,7 +17,7 @@ command *addCommand(command *cmd, char *tokens)
     cmd = cmd->next;
 
     int len = 0;
-    for (int i = 0; i < strlen(cmd); i++)
+    for (int i = 0; i < strlen(tokens); i++)
     {
         if (tokens[i] == ' ')
         {
@@ -29,14 +30,14 @@ command *addCommand(command *cmd, char *tokens)
     int index = 0;
     while (tokens)
     {
-        char* token = strsep(tokens, ' ');
+        char* token = strsep(&tokens, " ");
         sepTokens[index] = token;
 
         index++;
     }   
 
     
-    cmd->len = len;
+    cmd->size = len;
     cmd->tokens = sepTokens;
     
     return orig;

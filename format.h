@@ -5,5 +5,6 @@ char *lower(char *);
 char *insertSpace(char *);
 char *alterSpace(char *);
 char *deleteSpace(char *);
+char *format(char *);
 
 #endif

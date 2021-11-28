@@ -2,13 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #include "parser.h"
 #include "shell.h"
 #include "command.h"
 
-void shell() {
-	while (true)
+void shell() 
+{
+	while (1)
 	{
 		command* cmd = parse();
 		
@@ -20,7 +23,7 @@ void shell() {
 			{
 				chdir(tokens[1]);
 			}
-			else if (strcmp(tokens[0], "exit" == 0))
+			else if (strcmp(tokens[0], "exit") == 0)
 			{
 				exit(0);
 			}
@@ -31,7 +34,7 @@ void shell() {
 
 			if (errno)
 			{
-				cout << strerror(errno);
+				printf("%s", strerror(errno));
 			}
 
 			cmd = cmd->next;
@@ -41,14 +44,40 @@ void shell() {
 	}
 }
 
+void execute(char **tokens)
+{
+	/*
+	THIS WILL EVENTUALLY DEAL WITH PIPING AND REDIRECTION
+
+	for(int j = 0; j < tokens[i].size; j++) 
+	{
+		if(strcmp(tokens[i][j], ">") == 0) {
+			rrun1(tokens, j);	
+		} else if(strcmp(tokens[i][j], "<") == 0) {
+			rrun2(tokens, j);
+		}
+	}
+	*/
+
+	run(tokens);
+}
+
 void run(char **tokens)
 {
 	int c = fork();
-	if(!c) {
+	
+	if(c)
+	{
+		int status;
+		wait(&status);
+	}
+	else
+	{
 		execvp(tokens[0], tokens);
 	}
 }
 
+/*
 void rrun1(char **tokens, int r) {
 	//split array
 	char **first;
@@ -66,14 +95,4 @@ void rrun2(char **tokens, int r) {
 	run(second);
 	dup2(a, STDIN_FILENO);	
 }
-
-void command(char *cmd)
-{
-    format(cmd);
-    int c = fork();
-    
-    if (!c)
-    {
-        execvp(cmd[0], cmd);
-    }
-}
+*/

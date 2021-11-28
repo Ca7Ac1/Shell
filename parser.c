@@ -23,12 +23,9 @@ command *splitCommands(char *line)
     command *commands;
     while (line)
     {   
-        char *tokens = strsep(line, ';');
+        char *tokens = strsep(&line, ";");
         commands = addCommand(commands, tokens);
     }
-}
 
-int main()
-{
-    parse();
+    return commands;
 }

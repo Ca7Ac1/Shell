@@ -4,5 +4,6 @@
 #include "command.h"
 
 command *parse();
+command *splitCommands(char *);
 
 #endif

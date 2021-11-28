@@ -5,10 +5,10 @@ typedef struct command
 {
     char **tokens;
     int size;
-    command *next;
+    struct command *next;
 } command;
 
-command *addCommand(command *, char **);
+command *addCommand(command *, char *);
 void freeCommands(command *);
 
 #endif
