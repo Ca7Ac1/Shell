@@ -18,6 +18,7 @@ command.o: command.c command.h
 
 clean:
 	rm *.o
+	rm main
 
 run:
 	./main
