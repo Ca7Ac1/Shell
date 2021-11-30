@@ -17,18 +17,7 @@ char *lower(char *line)
 
 char *insertSpace(char *line)
 {
-    int additions = 0;
-
-    for (int i = 0; i < strlen(line); i++)
-    {
-        if (line[i] == '|' || line[i] == '>' || line[i] == '<')
-        {
-            additions++;
-        }
-    }
-
-    additions *= 2;
-
+    int additions = (count(line, '|') + count(line, '>'), count(line, '<')) * 2;
     char *newLine = malloc(sizeof(char) * strlen(line) + sizeof(char) * additions + 1);
 
     int index = 0;

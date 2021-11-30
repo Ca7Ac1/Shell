@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "command.h"
+#include "strlib.h"
 
 command *addCommand(command *cmd, char *tokens)
 {
@@ -27,14 +28,7 @@ command *addCommand(command *cmd, char *tokens)
         cmd = cmd->next;
     }
 
-    int len = 1;
-    for (int i = 0; i < strlen(tokens); i++)
-    {
-        if (tokens[i] == ' ')
-        {
-            len++;
-        }
-    }
+    int len = count(tokens, ' ') + 1;
 
     cmd->tokens = malloc(len * sizeof(char *));
 
