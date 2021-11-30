@@ -72,6 +72,8 @@ void shell()
 					{
 						printf("%s\n", strerror(errno));
 					}
+
+					errno = 0;
 				}
 			}
 
@@ -96,12 +98,12 @@ void execute(char **tokens, int size)
 		}
 		else if (count(tokens[i], '<') > 0)
 		{
-			existsRightRedirect = 1;
+			existsLeftRedirect = 1;
 			break;
 		}
 		else if (count(tokens[i], '>') > 0)
 		{
-			existsLeftRedirect = 1;
+			existsRightRedirect = 1;
 			break;
 		}
 	}
@@ -128,7 +130,7 @@ void leftRedirect(char **tokens, int size)
 {
 	tokens[size - 2] = NULL;
 
-	int in = open(tokens[size - 1], O_CREAT, 0644);
+	int in = open(tokens[size - 1], O_CREAT | O_RDONLY, 0644);
 	dup2(in, STDIN_FILENO);
 
 	run(tokens);
@@ -141,7 +143,7 @@ void rightRedirect(char **tokens, int size)
 {
 	tokens[size - 2] = NULL;
 
-	int out = open(tokens[size - 1], O_CREAT, 0644);
+	int out = open(tokens[size - 1], O_CREAT | O_WRONLY, 0644);
 	dup2(out, STDOUT_FILENO);
 
 	run(tokens);
@@ -167,6 +169,7 @@ void run(char **tokens)
 	else
 	{
 		execvp(tokens[0], tokens);
+		exit(0);
 	}
 }
 
