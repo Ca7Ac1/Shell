@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <dirent.h>
 
 #include "parser.h"
@@ -108,17 +109,17 @@ void execute(char **tokens, int size)
 		}
 	}
 
-	if (existsLeftRedirect)
+	if (existsPipe)
+	{
+		pipeCmd(tokens, size);
+	}
+	else if (existsLeftRedirect)
 	{
 		leftRedirect(tokens, size);
 	}
 	else if (existsRightRedirect)
 	{
 		rightRedirect(tokens, size);
-	}
-	else if (existsPipe)
-	{
-		pipeCmd(tokens, size);
 	}
 	else
 	{
@@ -154,8 +155,114 @@ void rightRedirect(char **tokens, int size)
 
 void pipeCmd(char **tokens, int size)
 {
+	int index = 0;
+	for (int i = 0; i < size; i++)
+	{
+		if (count(tokens[i], '|') > 0)
+		{
+			tokens[i] = 0;
+		}
+	}
 
+	char *str = malloc(100000);
+	str[0] = 0;
+
+	for (int i = 0; i < index; i++)
+	{
+		strcat(str, )
+	}
+
+	free(str);
 }
+
+// void pipeCmd(char **tokens, int size)
+// {
+// 	int amt = 0;
+// 	for (int i = 0; i < size; i++)
+// 	{
+// 		if (count(tokens[i], '|') > 0)
+// 		{
+// 			amt++;
+// 		}
+// 	}
+
+// 	int pipes[2];
+// 	pipe(pipes);
+
+// 	char first = 1;
+// 	char **curr = tokens;
+// 	int currSize = 0;
+// 	for (int i = 0; i <= size; i++)
+// 	{
+// 		if (i == size || count(tokens[i], '|') > 0)
+// 		{
+// 			currSize = i - currSize;
+
+// 			dup2(extraOut, STDOUT_FILENO);
+// 			dup2(extraIn, STDIN_FILENO);
+
+// 			printf("%s\t%d\n", curr[0], amt);
+
+// 			if (i != size)
+// 			{
+// 				tokens[i] = 0;
+// 			}
+
+// 			if (!first)
+// 			{
+// 				dup2(pipes[0], STDIN_FILENO);
+// 			}
+// 			else
+// 			{
+// 				for (int j = i; j < size && count(tokens[j], '|') == 0; j++)
+// 				{
+// 					if (count(tokens[j], '<') > 0)
+// 					{
+// 						leftRedirect(curr, currSize);
+// 					}
+// 				}
+
+// 				first = 0;
+// 			}
+
+// 			if (amt)
+// 			{
+// 				run(curr);
+// 				dup2(pipes[1], STDOUT_FILENO);
+// 			}
+// 			else
+// 			{
+// 				char redirect = 0;
+// 				for (int j = i; j < size && count(tokens[j], '|') == 0; j++)
+// 				{
+// 					if (count(tokens[j], '>') > 0)
+// 					{
+// 						rightRedirect(curr, currSize);
+// 						redirect = 1;
+// 						break;
+// 					}
+// 				}
+
+// 				if (!redirect)
+// 				{
+// 					run(curr);
+// 				}
+// 			}
+
+// 			if (i + 1 < size)
+// 			{
+// 				curr = tokens + i + 1;
+// 			}
+
+// 			amt--;
+// 		}
+// 	}
+
+// 	close(pipes[0]);
+// 	close(pipes[1]);
+// 	dup2(extraOut, STDOUT_FILENO);
+// 	dup2(extraIn, STDIN_FILENO);
+// }
 
 void run(char **tokens)
 {
@@ -169,26 +276,12 @@ void run(char **tokens)
 	else
 	{
 		execvp(tokens[0], tokens);
+
+		if (errno)
+		{
+			printf("%s\n", strerror(errno));
+		}
+
 		exit(0);
 	}
 }
-
-/*
-void rrun1(char **tokens, int r) {
-	//split array
-	char **first;
-	int a = dup();
-	dup2(STDOUT_FILENO, a);
-	run(first);
-	dup2(a, STDOUT_FILENO);	
-}
-
-void rrun2(char **tokens, int r) {
-	//split array
-	char **second;
-	int a = dup();
-	dup2(STDIN_FILENO, a);
-	run(second);
-	dup2(a, STDIN_FILENO);	
-}
-*/
