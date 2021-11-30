@@ -20,7 +20,7 @@ command *parse()
 
 command *splitCommands(char *line)
 {
-    command *commands;
+    command *commands = NULL;
     while (line)
     {   
         char *tokens = strsep(&line, ";");

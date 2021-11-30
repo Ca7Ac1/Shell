@@ -6,21 +6,26 @@
 
 command *addCommand(command *cmd, char *tokens)
 {
+    command *orig;
     if (!cmd)
     {
         cmd = malloc(sizeof(command));
-        cmd->next = 0;
+        cmd->next = NULL;
+        
+        orig = cmd;
     }
-
-    command *orig = cmd;
-
-    while (cmd->next)
+    else
     {
+        orig = cmd;
+
+        while (cmd->next)
+        {
+            cmd = cmd->next;
+        }
+        
+        cmd->next = malloc(sizeof(command));
         cmd = cmd->next;
     }
-
-    cmd->next = malloc(sizeof(command));
-    cmd = cmd->next;
 
     int len = 1;
     for (int i = 0; i < strlen(tokens); i++)
@@ -31,21 +36,17 @@ command *addCommand(command *cmd, char *tokens)
         }
     }
 
-    char **sepTokens = malloc(len * sizeof(char *));
+    cmd->tokens = malloc(len * sizeof(char *));
 
     int index = 0;
     while (tokens)
     {
-        char* token = strsep(&tokens, " ");
-        sepTokens[index] = token;
-
+        cmd->tokens[index] = strsep(&tokens, " ");
         index++;
     }   
 
-    
     cmd->size = len;
-    cmd->tokens = sepTokens;
-    cmd->next = 0;
+    cmd->next = NULL;
     
     return orig;
 }
