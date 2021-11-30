@@ -4,6 +4,7 @@
 #include <ctype.h>
 
 #include "format.h"
+#include "strlib.h"
 
 char *lower(char *line)
 {
