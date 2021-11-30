@@ -161,16 +161,25 @@ void pipeCmd(char **tokens, int size)
 		if (count(tokens[i], '|') > 0)
 		{
 			tokens[i] = 0;
+			index = i;
+			break;
 		}
 	}
 
-	char *str = malloc(100000);
-	str[0] = 0;
+	char *str = malloc(30000);
+	char **curr = tokens + index + 1;
+	str[0] = '\0';
 
 	for (int i = 0; i < index; i++)
 	{
-		strcat(str, )
+		strcat(str, tokens[i]);
 	}
+
+	printf("[%s]\n", str);
+	
+	printf("%s\n", curr[0]);
+	run(curr);
+	popen(str, "r");
 
 	free(str);
 }
