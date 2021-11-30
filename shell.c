@@ -3,15 +3,23 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <dirent.h>
 
 #include "parser.h"
 #include "shell.h"
 #include "command.h"
+#include "strlib.h"
+
+int extraIn;
+int extraOut;
 
 void shell()
 {
+	extraIn = dup(STDIN_FILENO);
+	extraOut = dup(STDOUT_FILENO);
+
 	char path[1000000];
 
 	while (1)
@@ -51,7 +59,7 @@ void shell()
 				}
 				else
 				{
-					execute(tokens);
+					execute(tokens, cmd->size);
 				}
 
 				if (errno)
@@ -74,22 +82,77 @@ void shell()
 	}
 }
 
-void execute(char **tokens)
+void execute(char **tokens, int size)
 {
-	/*
-	THIS WILL EVENTUALLY DEAL WITH PIPING AND REDIRECTION
-
-	for(int j = 0; j < tokens[i].size; j++) 
+	char existsLeftRedirect = 0;
+	char existsRightRedirect = 0;
+	char existsPipe = 0;
+	for (int i = 0; i < size; i++)
 	{
-		if(strcmp(tokens[i][j], ">") == 0) {
-			rrun1(tokens, j);	
-		} else if(strcmp(tokens[i][j], "<") == 0) {
-			rrun2(tokens, j);
+		if (count(tokens[i], '|') > 0)
+		{
+			existsPipe = 1;
+			break;
+		}
+		else if (count(tokens[i], '<') > 0)
+		{
+			existsRightRedirect = 1;
+			break;
+		}
+		else if (count(tokens[i], '>') > 0)
+		{
+			existsLeftRedirect = 1;
+			break;
 		}
 	}
-	*/
+
+	if (existsLeftRedirect)
+	{
+		leftRedirect(tokens, size);
+	}
+	else if (existsRightRedirect)
+	{
+		rightRedirect(tokens, size);
+	}
+	else if (existsPipe)
+	{
+		pipeCmd(tokens, size);
+	}
+	else
+	{
+		run(tokens);
+	}
+}
+
+void leftRedirect(char **tokens, int size)
+{
+	tokens[size - 2] = NULL;
+
+	int in = open(tokens[size - 1], O_CREAT, 0644);
+	dup2(in, STDIN_FILENO);
 
 	run(tokens);
+
+	dup2(extraIn, STDIN_FILENO);
+	close(in);
+}
+
+void rightRedirect(char **tokens, int size)
+{
+	tokens[size - 2] = NULL;
+
+	int out = open(tokens[size - 1], O_CREAT, 0644);
+	dup2(out, STDOUT_FILENO);
+
+	run(tokens);
+
+	dup2(extraOut, STDOUT_FILENO);
+	close(out);
+}
+
+void pipeCmd(char **tokens, int size)
+{
+
 }
 
 void run(char **tokens)
