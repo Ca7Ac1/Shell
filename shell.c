@@ -4,12 +4,13 @@
 #include <errno.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <dirent.h>
 
 #include "parser.h"
 #include "shell.h"
 #include "command.h"
 
-void shell() 
+void shell()
 {
 	char path[1000000];
 
@@ -18,31 +19,52 @@ void shell()
 		getcwd(path, sizeof(path) * sizeof(char));
 		printf("%s ", path);
 
-		command* cmd = parse();
-		command* orig = cmd;
+		command *cmd = parse();
+		command *orig = cmd;
 
 		while (cmd)
 		{
-			char **tokens = cmd->tokens;
+			if (cmd->size >= 1)
+			{
+				char **tokens = cmd->tokens;
 
-			if (strcmp(tokens[0], "cd") == 0)
-			{
-				// printf("\n\nChanging to: %s\n\n", tokens[1]);
-				chdir(tokens[1]);
-			}
-			else if (strcmp(tokens[0], "exit") == 0)
-			{
-				exit(0);
-			}
-			else
-			{
-				execute(tokens);
-			}
+				if (strcmp(tokens[0], "cd") == 0)
+				{
+					if (cmd->size < 2)
+					{
+						printf("No arguments for cd\n");
+					}
+					else
+					{
+						DIR *dir = opendir(tokens[1]);
 
-			if (errno)
-			{
-				printf("%s", strerror(errno));
-				cmd = NULL;
+						if (dir)
+						{
+							chdir(tokens[1]);
+							closedir(dir);
+						}
+					}
+				}
+				else if (strcmp(tokens[0], "exit") == 0)
+				{
+					exit(0);
+				}
+				else
+				{
+					execute(tokens);
+				}
+
+				if (errno)
+				{
+					if (cmd->size > 0)
+					{
+						printf("%s: %s\n", tokens[0], strerror(errno));
+					}
+					else
+					{
+						printf("%s\n", strerror(errno));
+					}
+				}
 			}
 
 			cmd = cmd->next;
@@ -73,8 +95,8 @@ void execute(char **tokens)
 void run(char **tokens)
 {
 	int c = fork();
-	
-	if(c)
+
+	if (c)
 	{
 		int status;
 		wait(&status);
