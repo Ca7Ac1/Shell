@@ -2,14 +2,13 @@
 Systems project #2
 
 Features:
-- One line at a time
-- exit and cdi
+- exit and cd
 - Semicolons
 - Redirection
-- Extra whitespace
-- Basic error handling
+- Allow extra whitespace
+- Basic error handling and reporting
 
-Unsuccessful features:
+Attempted features:
 - Piping
 
 Bugs:
