@@ -4,7 +4,7 @@ Systems project #2
 Features:
 - exit and cd
 - Semicolons
-- Redirection
+- Redirection ("<", ">" and ">>")
 - Allow extra whitespace
 - Basic error handling and reporting
 
@@ -13,6 +13,7 @@ Attempted features:
 
 Bugs:
 - rm -rf fails
+- No way to use ~ to go to home directory
 
 Headers:
 
