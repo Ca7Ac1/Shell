@@ -114,7 +114,18 @@ void rightRedirect(char **tokens, int size)
 
 	tokens[size - 2] = NULL;
 
-	int out = open(tokens[size - 1], O_CREAT | O_WRONLY, 0644);
+	int out;
+	if (size - 3 >= 0 && strcmp(tokens[size - 3], ">") == 0)
+	{
+		out = open(tokens[size - 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
+		tokens[size - 3] = NULL;
+	}
+	else
+	{
+		out = open(tokens[size - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	}
+
+	 
 	dup2(out, STDOUT_FILENO);
 
 	run(tokens);
