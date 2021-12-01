@@ -169,11 +169,16 @@ void execute(char **tokens, int size)
 				if (index != 0)
 				{
 					dup2(pipes[index - 1][0], STDIN_FILENO);
+                    close(pipes[index - 1][1]);
 				}
 
 				leftRedirect(curr, i - prevSize);
-				char nl = '\n';
-				write(STDOUT_FILENO, &nl, sizeof(char));
+
+                if (index != 0)
+                {
+                    close(pipes[index - 1][0]);
+                    free(pipes[index - 1]);
+                }
 
 				index++;
 				prevSize = i;
@@ -181,20 +186,17 @@ void execute(char **tokens, int size)
 			}
 		}
 
+
+
 		dup2(pipes[index - 1][0], STDIN_FILENO);
 		dup2(extraOut, STDOUT_FILENO);
+        close(pipes[index - 1][1]);
 
 		rightRedirect(curr, size - prevSize);
 
 		dup2(extraIn, STDIN_FILENO);
-
-		for (int i = 0; i < index; i++)
-		{
-			close(pipes[i][0]);
-			close(pipes[i][1]);
-
-			free(pipes[i]);
-		}
+        close(pipes[index - 1][1]);
+		free(pipes[index]);
 
 		// free(pipes);
 	}
