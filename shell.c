@@ -85,50 +85,14 @@ void shell()
 	}
 }
 
-void execute(char **tokens, int size)
-{
-	char existsLeftRedirect = 0;
-	char existsRightRedirect = 0;
-	char existsPipe = 0;
-	for (int i = 0; i < size; i++)
-	{
-		if (count(tokens[i], '|') > 0)
-		{
-			existsPipe = 1;
-			break;
-		}
-		else if (count(tokens[i], '<') > 0)
-		{
-			existsLeftRedirect = 1;
-			break;
-		}
-		else if (count(tokens[i], '>') > 0)
-		{
-			existsRightRedirect = 1;
-			break;
-		}
-	}
-
-	if (existsPipe)
-	{
-		pipeCmd(tokens, size);
-	}
-	else if (existsLeftRedirect)
-	{
-		leftRedirect(tokens, size);
-	}
-	else if (existsRightRedirect)
-	{
-		rightRedirect(tokens, size);
-	}
-	else
-	{
-		run(tokens);
-	}
-}
-
 void leftRedirect(char **tokens, int size)
 {
+	if (size - 2 < 0 || strcmp(tokens[size - 2], "<") != 0)
+	{
+		run(tokens);
+		return;
+	}
+
 	tokens[size - 2] = NULL;
 
 	int in = open(tokens[size - 1], O_CREAT | O_RDONLY, 0644);
@@ -142,6 +106,12 @@ void leftRedirect(char **tokens, int size)
 
 void rightRedirect(char **tokens, int size)
 {
+	if (size - 2 < 0 || strcmp(tokens[size - 2], ">") != 0)
+	{
+		run(tokens);
+		return;
+	}
+
 	tokens[size - 2] = NULL;
 
 	int out = open(tokens[size - 1], O_CREAT | O_WRONLY, 0644);
@@ -153,125 +123,84 @@ void rightRedirect(char **tokens, int size)
 	close(out);
 }
 
-void pipeCmd(char **tokens, int size)
+void execute(char **tokens, int size)
 {
-	int index = 0;
+	unsigned int amtPipes = 0;
 	for (int i = 0; i < size; i++)
 	{
 		if (count(tokens[i], '|') > 0)
 		{
-			tokens[i] = 0;
-			index = i;
-			break;
+			amtPipes++;
 		}
 	}
 
-	char *str = malloc(30000);
-	char **curr = tokens + index + 1;
-	str[0] = '\0';
-
-	for (int i = 0; i < index; i++)
+	if (amtPipes != 0)
 	{
-		strcat(str, tokens[i]);
+		char **curr = tokens;
+		int **pipes = malloc(sizeof(int *) * amtPipes);
+
+		int index = 0;
+		int prevSize = 0;
+		for (int i = 0; i < size; i++)
+		{
+			if (count(tokens[i], '|') > 0)
+			{
+				dup2(extraIn, STDIN_FILENO);
+				dup2(extraOut, STDOUT_FILENO);
+
+				pipes[index] = malloc(sizeof(int[2]));
+				pipe(pipes[index]);
+
+				tokens[i] = NULL;
+
+				dup2(pipes[index][1], STDOUT_FILENO);
+
+				if (index != 0)
+				{
+					dup2(pipes[index - 1][0], STDIN_FILENO);
+				}
+
+				leftRedirect(curr, i - prevSize);
+				char nl = '\n';
+				write(STDOUT_FILENO, &nl, sizeof(char));
+
+				index++;
+				prevSize = i;
+				curr = tokens + i + 1;
+			}
+		}
+
+		dup2(pipes[index - 1][0], STDIN_FILENO);
+		dup2(extraOut, STDOUT_FILENO);
+
+		rightRedirect(curr, size - prevSize);
+
+		dup2(extraIn, STDIN_FILENO);
+
+		for (int i = 0; i < index; i++)
+		{
+			close(pipes[i][0]);
+			close(pipes[i][1]);
+
+			free(pipes[i]);
+		}
+
+		// free(pipes);
 	}
+	else
+	{
+		for (int i = 0; i < size; i++)
+		{
+			if (count(tokens[i], '<') > 0)
+			{
+				leftRedirect(tokens, size);
+				return;
+			}
+		}
 
-	printf("[%s]\n", str);
-	
-	printf("%s\n", curr[0]);
-	run(curr);
-	popen(str, "r");
-
-	free(str);
+		rightRedirect(tokens, size);
+	}
 }
-
-// void pipeCmd(char **tokens, int size)
-// {
-// 	int amt = 0;
-// 	for (int i = 0; i < size; i++)
-// 	{
-// 		if (count(tokens[i], '|') > 0)
-// 		{
-// 			amt++;
-// 		}
-// 	}
-
-// 	int pipes[2];
-// 	pipe(pipes);
-
-// 	char first = 1;
-// 	char **curr = tokens;
-// 	int currSize = 0;
-// 	for (int i = 0; i <= size; i++)
-// 	{
-// 		if (i == size || count(tokens[i], '|') > 0)
-// 		{
-// 			currSize = i - currSize;
-
-// 			dup2(extraOut, STDOUT_FILENO);
-// 			dup2(extraIn, STDIN_FILENO);
-
-// 			printf("%s\t%d\n", curr[0], amt);
-
-// 			if (i != size)
-// 			{
-// 				tokens[i] = 0;
-// 			}
-
-// 			if (!first)
-// 			{
-// 				dup2(pipes[0], STDIN_FILENO);
-// 			}
-// 			else
-// 			{
-// 				for (int j = i; j < size && count(tokens[j], '|') == 0; j++)
-// 				{
-// 					if (count(tokens[j], '<') > 0)
-// 					{
-// 						leftRedirect(curr, currSize);
-// 					}
-// 				}
-
-// 				first = 0;
-// 			}
-
-// 			if (amt)
-// 			{
-// 				run(curr);
-// 				dup2(pipes[1], STDOUT_FILENO);
-// 			}
-// 			else
-// 			{
-// 				char redirect = 0;
-// 				for (int j = i; j < size && count(tokens[j], '|') == 0; j++)
-// 				{
-// 					if (count(tokens[j], '>') > 0)
-// 					{
-// 						rightRedirect(curr, currSize);
-// 						redirect = 1;
-// 						break;
-// 					}
-// 				}
-
-// 				if (!redirect)
-// 				{
-// 					run(curr);
-// 				}
-// 			}
-
-// 			if (i + 1 < size)
-// 			{
-// 				curr = tokens + i + 1;
-// 			}
-
-// 			amt--;
-// 		}
-// 	}
-
-// 	close(pipes[0]);
-// 	close(pipes[1]);
-// 	dup2(extraOut, STDOUT_FILENO);
-// 	dup2(extraIn, STDIN_FILENO);
-// }
 
 void run(char **tokens)
 {

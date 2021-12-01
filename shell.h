@@ -8,7 +8,6 @@ void shell();
 void execute(char **, int);
 void leftRedirect(char **tokens, int size);
 void rightRedirect(char **tokens, int size);
-void pipeCmd(char **tokens, int size);
 void run(char **);
 
 #endif

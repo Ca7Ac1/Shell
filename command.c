@@ -30,7 +30,7 @@ command *addCommand(command *cmd, char *tokens)
 
     int len = count(tokens, ' ') + 1;
 
-    cmd->tokens = malloc(len * sizeof(char *));
+    cmd->tokens = malloc(len * sizeof(char *) + sizeof(char *));
 
     int index = 0;
     while (tokens)
@@ -38,6 +38,8 @@ command *addCommand(command *cmd, char *tokens)
         cmd->tokens[index] = strsep(&tokens, " ");
         index++;
     }   
+
+    cmd->tokens[len] = NULL;
 
     cmd->size = len;
     cmd->next = NULL;
