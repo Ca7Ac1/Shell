@@ -7,9 +7,7 @@ Features:
 - Redirection ("<", ">" and ">>")
 - Allow extra whitespace
 - Basic error handling and reporting
-
-Attempted features:
-- Piping
+- Single Piping with redirection allowed on either end
 
 Bugs:
 - rm -rf fails
