@@ -5,9 +5,9 @@ Features:
 - exit and cd
 - Semicolons
 - Redirection ("<", ">" and ">>")
-- Allow extra whitespace
+- Allow extra whitespace between tokens (' ' and '\t')
 - Basic error handling and reporting
-- Single Piping with redirection allowed on either end
+- Multi-piping with redirection allowed on either end
 
 Bugs:
 - rm -rf fails
@@ -39,7 +39,6 @@ shell.h
 - void execute(char **, int);
 - void leftRedirect(char **tokens, int size);
 - void rightRedirect(char **tokens, int size);
-- void pipeCmd(char **tokens, int size);
 - void run(char **);
 
 strlib.h
