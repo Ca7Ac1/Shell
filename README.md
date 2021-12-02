@@ -6,8 +6,9 @@ Features:
 - Semicolons
 - Redirection ("<", ">" and ">>")
 - Allow extra whitespace between tokens (' ' and '\t')
+- Allow tokens to be surrounded in quotes (EX: echo "hello world")
 - Basic error handling and reporting
-- Multi-piping with redirection allowed on either end
+- Multi-piping with redirection allowed on either end (EX: cat < file | wc | wc > filewcwc)
 
 Bugs:
 - rm -rf fails
