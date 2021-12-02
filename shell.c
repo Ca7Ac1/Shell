@@ -203,8 +203,6 @@ void execute(char **tokens, int size)
 		free(pipes[index - 1]);
 
 		free(pipes);
-
-		printf("Here\n");
 	}
 	else
 	{
