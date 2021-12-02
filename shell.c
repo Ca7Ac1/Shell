@@ -194,11 +194,17 @@ void execute(char **tokens, int size)
 
 		rightRedirect(curr, size - prevSize);
 
+
+		// printf("%d\t%d\n", pipes[index - 1][0]);
+		
 		dup2(extraIn, STDIN_FILENO);
         close(pipes[index - 1][0]);
-		free(pipes[index]);
 
-		// free(pipes);
+		free(pipes[index - 1]);
+
+		free(pipes);
+
+		printf("Here\n");
 	}
 	else
 	{
