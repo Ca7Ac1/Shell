@@ -12,7 +12,7 @@ command *addCommand(command *cmd, char *tokens)
     {
         cmd = malloc(sizeof(command));
         cmd->next = NULL;
-        
+
         orig = cmd;
     }
     else
@@ -23,7 +23,7 @@ command *addCommand(command *cmd, char *tokens)
         {
             cmd = cmd->next;
         }
-        
+
         cmd->next = malloc(sizeof(command));
         cmd = cmd->next;
     }
@@ -35,15 +35,27 @@ command *addCommand(command *cmd, char *tokens)
     int index = 0;
     while (tokens)
     {
-        cmd->tokens[index] = strsep(&tokens, " ");
-        index++;
-    }   
+        while (tokens && tokens[0] == '\"')
+        {
+            tokens++;
+            cmd->tokens[index] = strsep(&tokens, "\"");
+            index++;
 
-    cmd->tokens[len] = NULL;
+            strsep(&tokens, " ");
+        }
 
-    cmd->size = len;
+        if (tokens)
+        {
+            cmd->tokens[index] = strsep(&tokens, " ");
+            index++;
+        }
+    }
+
+    cmd->tokens[index] = NULL;
+
+    cmd->size = index;
     cmd->next = NULL;
-    
+
     return orig;
 }
 
@@ -57,7 +69,7 @@ void printCommands(command *cmd)
 
         for (int i = 0; i < cmd->size; i++)
         {
-            printf("%s ", cmd->tokens[i]);
+            printf("[%s] ", cmd->tokens[i]);
         }
 
         printf("\n");
